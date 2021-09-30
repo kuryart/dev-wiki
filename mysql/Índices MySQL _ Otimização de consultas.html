@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<!-- saved from url=(0086)http://www.linhadecodigo.com.br/artigo/3620/indices-mysql-otimizacao-de-consultas.aspx -->
+<html lang="pt-br-us"><script src="./Índices MySQL _ Otimização de consultas_files/cb=gapi.loaded_0" async=""></script><script src="./Índices MySQL _ Otimização de consultas_files/sdk.js.download" async="" crossorigin="anonymous"></script><script id="facebook-jssdk" src="./Índices MySQL _ Otimização de consultas_files/sdk.js(1).download"></script><script type="text/javascript" async="" src="./Índices MySQL _ Otimização de consultas_files/ga.js.download"></script><script type="text/javascript" id="async-buttons" src="./Índices MySQL _ Otimização de consultas_files/async-buttons.js.download"></script><script async="" type="text/javascript" src="./Índices MySQL _ Otimização de consultas_files/ti.js.download"></script><script type="text/javascript" async="" src="./Índices MySQL _ Otimização de consultas_files/plusone.js.download" gapi_processed="true"></script><script data-dapp-detection="">!function(){let e=!1;function n(){if(!e){const n=document.createElement("meta");n.name="dapp-detected",document.head.appendChild(n),e=!0}}if(window.hasOwnProperty("ethereum")){if(window.__disableDappDetectionInsertion=!0,void 0===window.ethereum)return;n()}else{var t=window.ethereum;Object.defineProperty(window,"ethereum",{configurable:!0,enumerable:!1,set:function(e){window.__disableDappDetectionInsertion||n(),t=e},get:function(){if(!window.__disableDappDetectionInsertion){const e=arguments.callee;e&&e.caller&&e.caller.toString&&-1!==e.caller.toString().indexOf("getOwnPropertyNames")||n()}return t}})}}();</script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>
+	Índices MySQL : Otimização de consultas
+</title><meta id="PageDescription" name="Description" content="Veja neste artigo como otimizar consultas no banco de dados MySQL através da utilização de  índices. Serão apresentadas ainda algumas dicas gerais para melhorar a performance das consultas a tabelas com grandes volumes de dados."><meta id="PageKeywords" name="Keywords" content="Índices MySQL : Otimização de consultas"><meta name="language" content="pt-br"><meta id="viewport" name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=3.0,initial-scale=1.0"><link href="https://plus.google.com/100240100485097203227" rel="publisher"><link id="PageCanonical" rel="canonical" href="http://www.linhadecodigo.com.br/artigo/3620/indices-mysql-otimizacao-de-consultas.aspx">
+	<style>
+		*:before, *:after {
+			-webkit-box-sizing: border-box;
+			-moz-box-sizing: border-box;
+			box-sizing: border-box;
+		}
+	</style>
+    <link href="http://www.linhadecodigo.com.br/img/favicon.ico" rel="shortcut icon" type="image/x-icon"><link href="./Índices MySQL _ Otimização de consultas_files/master.css" rel="stylesheet" type="text/css"><link href="./Índices MySQL _ Otimização de consultas_files/content.css" rel="stylesheet" type="text/css"><link href="./Índices MySQL _ Otimização de consultas_files/grid.css" rel="stylesheet" type="text/css"><link href="./Índices MySQL _ Otimização de consultas_files/grid-responsive.css" rel="stylesheet" type="text/css"><link href="./Índices MySQL _ Otimização de consultas_files/lc-header-footer.css" rel="stylesheet" type="text/css"><link href="./Índices MySQL _ Otimização de consultas_files/form_style.css" rel="stylesheet" type="text/css"><link rel="stylesheet" href="./Índices MySQL _ Otimização de consultas_files/font-awesome.min.css">
+    <script src="./Índices MySQL _ Otimização de consultas_files/jquery.min.js.download"></script>
+    <script src="./Índices MySQL _ Otimização de consultas_files/jquery.infieldlabel.min.js.download" type="text/javascript"></script>
+    <script src="./Índices MySQL _ Otimização de consultas_files/menu.desktop.js.download" type="text/javascript"></script>
+    <script src="./Índices MySQL _ Otimização de consultas_files/funcoes_lc.js.download" type="text/javascript"></script>
+    <script type="text/javascript">
+        window.___gcfg = { lang: 'pt-BR' };
+        (function() {
+            var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+            po.src = 'https://apis.google.com/js/plusone.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+        })();
+        
+        function loadpromocao() {
+            //alert("teste");
+            $.ajax({
+                type: "GET",
+                url: "/promocao/loadpromo.asp",
+                dataType: "text",
+                success: function(responseText) {
+                    //alert(responseText);
+                    $("#promoview").html(responseText);
+                    setTimeout(function() { loadpromocao() }, 1000);
+                },
+                error: function() {
+                    //alert("Ocorreu um erro, você será redirecionado para a página da promoção");
+                    setTimeout(function() { loadpromocao() }, 1000);
+                }
+            });
+            
+        }
+        function hidepromo(a) {
+            if (a == 0) {
+                document.getElementById("bgplusone").style.display = "none";
+                document.getElementById("boxplusoneall").style.display = "none";
+            } else {
+                $("#promocaobtn").show();
+                document.getElementById("bgplusone").style.display = "block";
+                document.getElementById("boxplusoneall").style.display = "block";
+                document.getElementById("promocaotext").focus();
+            }
+        }
+        $(document).ready(function() {
+            //if (plusone != null && plusone != "") { showhidePlusOne(0); }
+            $(".labelInfield").inFieldLabels();
+
+            $('#top10-widget h3').click(function() {
+                var id = $(this).attr('id');
+                if (id == 'title-articles-widget') {
+                    $('#title-author-widget').addClass('inactive-tab');
+                    $('#title-articles-widget').removeClass('inactive-tab');
+                    $('#author-list').fadeOut(function() {
+                        $('#articles-list').fadeIn();
+                    });
+
+                } else {
+                    $('#title-articles-widget').addClass('inactive-tab');
+                    $('#title-author-widget').removeClass('inactive-tab');
+                    $('#articles-list').fadeOut(function() {
+                        $('#author-list').fadeIn();
+                    });
+                };
+
+            });
+        });
+    </script>
+    <!-- BEGIN Tynt Script -->
+        <script type="text/javascript">
+        if(document.location.protocol=='http:'){
+         var Tynt=Tynt||[];Tynt.push('d6atTCQpKr4BnYacwqm_6l');Tynt.i={"ap":"Read more:"};
+         (function(){var s=document.createElement('script');s.async="async";s.type="text/javascript";s.src='http://tcr.tynt.com/ti.js';var h=document.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);})();
+        }
+        </script>
+    <!-- END Tynt Script -->
+    
+<meta property="og:image" content="http://www.linhadecodigo.com.br/img/logoLc.png">
+<link href="./Índices MySQL _ Otimização de consultas_files/shCore.css" rel="stylesheet" type="text/css">
+<link href="./Índices MySQL _ Otimização de consultas_files/shThemeDefault.css" rel="stylesheet" type="text/css">
+<link href="./Índices MySQL _ Otimização de consultas_files/uniform.default.min.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="./Índices MySQL _ Otimização de consultas_files/jquery.uniform.min.js.download"></script>
+<script type="text/javascript" src="./Índices MySQL _ Otimização de consultas_files/querystring.js.download"></script>
+<script type="text/javascript" src="./Índices MySQL _ Otimização de consultas_files/jquery.cookie.js.download"></script>
+<script type="text/javascript" src="./Índices MySQL _ Otimização de consultas_files/shCore.js.download"></script>
+<script type="text/javascript" src="./Índices MySQL _ Otimização de consultas_files/shBrushJScript.js.download"></script>
+<script type="text/javascript">var switchTo5x = true;</script><script type="text/javascript" src="./Índices MySQL _ Otimização de consultas_files/buttons.js.download"></script><script type="text/javascript">stLight.options({ publisher: '7fba8974-a42c-4d1b-96a9-4249a82ce8c0', onhover: false });</script>
+<script type="text/javascript">SyntaxHighlighter.all();</script>	
+<style type="text/css">
+.article img { max-width: 100%; }
+.main-content h3 a.rss-icon { color: #EC7423; }
+.main-content h3 a.rss-icon:hover,
+.main-content h3 a.rss-icon:focus { text-decoration: none; color: #302f31; }
+</style>
+<script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-15063568-1']);
+    _gaq.push(['_setDomainName', '.linhadecodigo.com.br']);
+    _gaq.push(['_trackPageview']);
+	_gaq.push(['_trackPageLoadTime']);
+
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+</script><style type="text/css" data-fbcssmodules="css:fb.css.base css:fb.css.dialog css:fb.css.iframewidget css:fb.css.customer_chat_plugin_iframe">.fb_hidden{position:absolute;top:-10000px;z-index:10001}.fb_reposition{overflow:hidden;position:relative}.fb_invisible{display:none}.fb_reset{background:none;border:0;border-spacing:0;color:#000;cursor:auto;direction:ltr;font-family:"lucida grande", tahoma, verdana, arial, sans-serif;font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:1;margin:0;overflow:visible;padding:0;text-align:left;text-decoration:none;text-indent:0;text-shadow:none;text-transform:none;visibility:visible;white-space:normal;word-spacing:normal}.fb_reset>div{overflow:hidden}@keyframes fb_transform{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}.fb_animate{animation:fb_transform .3s forwards}
+.fb_dialog{background:rgba(82, 82, 82, .7);position:absolute;top:-10000px;z-index:10001}.fb_dialog_advanced{border-radius:8px;padding:10px}.fb_dialog_content{background:#fff;color:#373737}.fb_dialog_close_icon{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 0 transparent;cursor:pointer;display:block;height:15px;position:absolute;right:18px;top:17px;width:15px}.fb_dialog_mobile .fb_dialog_close_icon{left:5px;right:auto;top:5px}.fb_dialog_padding{background-color:transparent;position:absolute;width:1px;z-index:-1}.fb_dialog_close_icon:hover{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 -15px transparent}.fb_dialog_close_icon:active{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 -30px transparent}.fb_dialog_iframe{line-height:0}.fb_dialog_content .dialog_title{background:#6d84b4;border:1px solid #365899;color:#fff;font-size:14px;font-weight:bold;margin:0}.fb_dialog_content .dialog_title>span{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/yd/r/Cou7n-nqK52.gif) no-repeat 5px 50%;float:left;padding:5px 0 7px 26px}body.fb_hidden{height:100%;left:0;margin:0;overflow:visible;position:absolute;top:-10000px;transform:none;width:100%}.fb_dialog.fb_dialog_mobile.loading{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/ya/r/3rhSv5V8j3o.gif) white no-repeat 50% 50%;min-height:100%;min-width:100%;overflow:hidden;position:absolute;top:0;z-index:10001}.fb_dialog.fb_dialog_mobile.loading.centered{background:none;height:auto;min-height:initial;min-width:initial;width:auto}.fb_dialog.fb_dialog_mobile.loading.centered #fb_dialog_loader_spinner{width:100%}.fb_dialog.fb_dialog_mobile.loading.centered .fb_dialog_content{background:none}.loading.centered #fb_dialog_loader_close{clear:both;color:#fff;display:block;font-size:18px;padding-top:20px}#fb-root #fb_dialog_ipad_overlay{background:rgba(0, 0, 0, .4);bottom:0;left:0;min-height:100%;position:absolute;right:0;top:0;width:100%;z-index:10000}#fb-root #fb_dialog_ipad_overlay.hidden{display:none}.fb_dialog.fb_dialog_mobile.loading iframe{visibility:hidden}.fb_dialog_mobile .fb_dialog_iframe{position:sticky;top:0}.fb_dialog_content .dialog_header{background:linear-gradient(from(#738aba), to(#2c4987));border-bottom:1px solid;border-color:#043b87;box-shadow:white 0 1px 1px -1px inset;color:#fff;font:bold 14px Helvetica, sans-serif;text-overflow:ellipsis;text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0;vertical-align:middle;white-space:nowrap}.fb_dialog_content .dialog_header table{height:43px;width:100%}.fb_dialog_content .dialog_header td.header_left{font-size:12px;padding-left:5px;vertical-align:middle;width:60px}.fb_dialog_content .dialog_header td.header_right{font-size:12px;padding-right:5px;vertical-align:middle;width:60px}.fb_dialog_content .touchable_button{background:linear-gradient(from(#4267B2), to(#2a4887));background-clip:padding-box;border:1px solid #29487d;border-radius:3px;display:inline-block;line-height:18px;margin-top:3px;max-width:85px;padding:4px 12px;position:relative}.fb_dialog_content .dialog_header .touchable_button input{background:none;border:none;color:#fff;font:bold 12px Helvetica, sans-serif;margin:2px -12px;padding:2px 6px 3px 6px;text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0}.fb_dialog_content .dialog_header .header_center{color:#fff;font-size:16px;font-weight:bold;line-height:18px;text-align:center;vertical-align:middle}.fb_dialog_content .dialog_content{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/y9/r/jKEcVPZFk-2.gif) no-repeat 50% 50%;border:1px solid #4a4a4a;border-bottom:0;border-top:0;height:150px}.fb_dialog_content .dialog_footer{background:#f5f6f7;border:1px solid #4a4a4a;border-top-color:#ccc;height:40px}#fb_dialog_loader_close{float:left}.fb_dialog.fb_dialog_mobile .fb_dialog_close_icon{visibility:hidden}#fb_dialog_loader_spinner{animation:rotateSpinner 1.2s linear infinite;background-color:transparent;background-image:url(https://static.xx.fbcdn.net/rsrc.php/v3/yD/r/t-wz8gw1xG1.png);background-position:50% 50%;background-repeat:no-repeat;height:24px;width:24px}@keyframes rotateSpinner{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.fb_iframe_widget{display:inline-block;position:relative}.fb_iframe_widget span{display:inline-block;position:relative;text-align:justify}.fb_iframe_widget iframe{position:absolute}.fb_iframe_widget_fluid_desktop,.fb_iframe_widget_fluid_desktop span,.fb_iframe_widget_fluid_desktop iframe{max-width:100%}.fb_iframe_widget_fluid_desktop iframe{min-width:220px;position:relative}.fb_iframe_widget_lift{z-index:1}.fb_iframe_widget_fluid{display:inline}.fb_iframe_widget_fluid span{width:100%}
+.fb_mpn_mobile_landing_page_slide_out{animation-duration:200ms;animation-name:fb_mpn_landing_page_slide_out;transition-timing-function:ease-in}.fb_mpn_mobile_landing_page_slide_out_from_left{animation-duration:200ms;animation-name:fb_mpn_landing_page_slide_out_from_left;transition-timing-function:ease-in}.fb_mpn_mobile_landing_page_slide_up{animation-duration:500ms;animation-name:fb_mpn_landing_page_slide_up;transition-timing-function:ease-in}.fb_mpn_mobile_bounce_in{animation-duration:300ms;animation-name:fb_mpn_bounce_in;transition-timing-function:ease-in}.fb_mpn_mobile_bounce_out{animation-duration:300ms;animation-name:fb_mpn_bounce_out;transition-timing-function:ease-in}.fb_mpn_mobile_bounce_out_v2{animation-duration:300ms;animation-name:fb_mpn_fade_out;transition-timing-function:ease-in}.fb_customer_chat_bounce_in_v2{animation-duration:300ms;animation-name:fb_bounce_in_v2;transition-timing-function:ease-in}.fb_customer_chat_bounce_in_from_left{animation-duration:300ms;animation-name:fb_bounce_in_from_left;transition-timing-function:ease-in}.fb_customer_chat_bounce_out_v2{animation-duration:300ms;animation-name:fb_bounce_out_v2;transition-timing-function:ease-in}.fb_customer_chat_bounce_out_from_left{animation-duration:300ms;animation-name:fb_bounce_out_from_left;transition-timing-function:ease-in}.fb_customer_chat_bubble_animated_no_badge{box-shadow:0 3px 12px rgba(0, 0, 0, .15);transition:box-shadow 150ms linear}.fb_customer_chat_bubble_animated_no_badge:hover{box-shadow:0 5px 24px rgba(0, 0, 0, .3)}.fb_customer_chat_bubble_animated_with_badge{box-shadow:-5px 4px 14px rgba(0, 0, 0, .15);transition:box-shadow 150ms linear}.fb_customer_chat_bubble_animated_with_badge:hover{box-shadow:-5px 8px 24px rgba(0, 0, 0, .2)}.fb_invisible_flow{display:inherit;height:0;overflow-x:hidden;width:0}.fb_new_ui_mobile_overlay_active{overflow:hidden}@keyframes fb_mpn_landing_page_slide_in{0%{border-radius:50%;margin:0 24px;width:60px}40%{border-radius:18px}100%{margin:0 12px;width:100% - 24px}}@keyframes fb_mpn_landing_page_slide_in_from_left{0%{border-radius:50%;left:12px;margin:0 24px;width:60px}40%{border-radius:18px}100%{left:12px;margin:0 12px;width:100% - 24px}}@keyframes fb_mpn_landing_page_slide_out{0%{margin:0 12px;width:100% - 24px}60%{border-radius:18px}100%{border-radius:50%;margin:0 24px;width:60px}}@keyframes fb_mpn_landing_page_slide_out_from_left{0%{left:12px;width:100% - 24px}60%{border-radius:18px}100%{border-radius:50%;left:12px;width:60px}}@keyframes fb_mpn_landing_page_slide_up{0%{bottom:0;opacity:0}100%{bottom:24px;opacity:1}}@keyframes fb_mpn_bounce_in{0%{opacity:.5;top:100%}100%{opacity:1;top:0}}@keyframes fb_mpn_fade_out{0%{bottom:30px;opacity:1}100%{bottom:0;opacity:0}}@keyframes fb_mpn_bounce_out{0%{opacity:1;top:0}100%{opacity:.5;top:100%}}@keyframes fb_bounce_in_v2{0%{opacity:0;transform:scale(0, 0);transform-origin:bottom right}50%{transform:scale(1.03, 1.03);transform-origin:bottom right}100%{opacity:1;transform:scale(1, 1);transform-origin:bottom right}}@keyframes fb_bounce_in_from_left{0%{opacity:0;transform:scale(0, 0);transform-origin:bottom left}50%{transform:scale(1.03, 1.03);transform-origin:bottom left}100%{opacity:1;transform:scale(1, 1);transform-origin:bottom left}}@keyframes fb_bounce_out_v2{0%{opacity:1;transform:scale(1, 1);transform-origin:bottom right}100%{opacity:0;transform:scale(0, 0);transform-origin:bottom right}}@keyframes fb_bounce_out_from_left{0%{opacity:1;transform:scale(1, 1);transform-origin:bottom left}100%{opacity:0;transform:scale(0, 0);transform-origin:bottom left}}@keyframes fb_bounce_out_v2_mobile_chat_started{0%{opacity:1;top:0}100%{opacity:0;top:20px}}@keyframes fb_customer_chat_bubble_bounce_in_animation{0%{bottom:6pt;opacity:0;transform:scale(0, 0);transform-origin:center}70%{bottom:18pt;opacity:1;transform:scale(1.2, 1.2)}100%{transform:scale(1, 1)}}@keyframes slideInFromBottom{0%{opacity:.1;transform:translateY(100%)}100%{opacity:1;transform:translateY(0)}}@keyframes slideInFromBottomDelay{0%{opacity:0;transform:translateY(100%)}97%{opacity:0;transform:translateY(100%)}100%{opacity:1;transform:translateY(0)}}</style></head>
+<body>
+<div id="fb-root" class=" fb_reset"><div style="position: absolute; top: -10000px; width: 0px; height: 0px;"><div></div></div></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/pt_BR/sdk.js#xfbml=1&version=v2.3&appId=557561654385120";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="dm-shadow"></div>
+<div class="dm-shell">
+
+<script>
+$(document).ready(function() {
+	'use strict';
+	
+	$(document).on("submit", "#buscaArtigos" ,function(e){
+		if ($('#Pesquisar').val() == "") {
+			e.preventDefault();
+			e.stopPropagation();
+			window.location = "http://www.linhadecodigo.com.br/todosartigos.aspx";
+		}
+	});
+});
+</script>	
+	<header>
+		<span class="opacity"></span>
+		<nav class="lateral" style="height: 899px;">
+			<ul style="height: 899px;">
+				<li><strong><a href="http://www.linhadecodigo.com.br/"><span class="font-dev">Bem</span><span class="font-media">vindo</span><span class="icon fa fa-home"></span></a></strong></li>
+				<li><a href="http://www.linhadecodigo.com.br/artigo/3620/indices-mysql-otimizacao-de-consultas.aspx#" class="back" data-main="true">Voltar</a></li>
+				
+				<li><a href="http://www.linhadecodigo.com.br/artigo/3620/indices-mysql-otimizacao-de-consultas.aspx#" rel="nofollow"><span class="icon2 fa fa-desktop"></span>Canais<span></span></a>
+					<ul>
+						<li><h5>Canais<span class="icon fa fa-desktop"></span></h5></li>
+						<li><a href="http://www.linhadecodigo.com.br/artigo/3620/indices-mysql-otimizacao-de-consultas.aspx#" class="back">Voltar</a></li>
+						<li><a href="http://www.linhadecodigo.com.br/php.aspx">PHP</a></li>
+						<li><a href="http://www.linhadecodigo.com.br/cms.aspx">CMS</a></li>
+						<li><a href="http://www.linhadecodigo.com.br/python.aspx">Python</a></li>
+						<li><a href="http://www.linhadecodigo.com.br/java.aspx">Java</a></li>
+						<li><a href="http://www.linhadecodigo.com.br/aspnet.aspx">.net</a></li>
+						<li><a href="http://www.linhadecodigo.com.br/html.aspx">HTML</a></li>
+						<li><a href="http://www.linhadecodigo.com.br/css.aspx">CSS</a></li>
+						<li><a href="http://www.linhadecodigo.com.br/javascript.aspx">Javascript</a></li>
+						<li><a href="http://www.linhadecodigo.com.br/bancodedados.aspx">Banco de dados</a></li>
+						<li><a href="http://www.linhadecodigo.com.br/todosartigos.aspx">Todos</a></li>
+					</ul>
+				</li>
+				<li><a href="mailto:colabore@linhadecodigo.com.br" rel="nofollow"><span class="icon2 fa fa-headphones"></span>Fale Conosco</a></li>
+				<li><a href="http://www.linhadecodigo.com.br/feed/" rel="nofollow"><span class="icon2 fa fa-rss"></span>RSS</a></li>
+				
+			</ul>
+		</nav>
+		<nav class="dm-bgnav-out">
+			<div class="container-fluid dm-bgnav">
+				<div class="container">
+					<div class="devmenu">
+						<i><a href="http://www.linhadecodigo.com.br/artigo/3620/indices-mysql-otimizacao-de-consultas.aspx#" class="menu"></a></i>
+						<a class="logo-mob" href="http://www.linhadecodigo.com.br/">
+						<span class="font-dev">Linha</span><span class="font-media"> de Código</span>
+						</a>
+						<span id="headermenudesktop"><ul class="navspace menucel ativo2 dm-2"><li><a href="http://www.linhadecodigo.com.br/artigo/3620/indices-mysql-otimizacao-de-consultas.aspx#" rel="nofollow" class="menulink">Desenvolvimento &nbsp;<small>▼</small></a><ul class="submenu"><li><a href="http://www.linhadecodigo.com.br/php.aspx">PHP</a></li><li><a href="http://www.linhadecodigo.com.br/cms.aspx">CMS</a></li><li><a href="http://www.linhadecodigo.com.br/python.aspx">Python</a></li><li><a href="http://www.linhadecodigo.com.br/java.aspx">Java</a></li><li><a href="http://www.linhadecodigo.com.br/aspnet.aspx">.net</a></li><li><a href="http://www.linhadecodigo.com.br/bancodedados.aspx">Banco de dados</a></li><a href="http://www.linhadecodigo.com.br/todosartigos.aspx" class="btn-dm-nav">Todos</a></ul></li></ul><ul class="navspace menucel ativo3 dm-2"><li><a href="http://www.linhadecodigo.com.br/artigo/3620/indices-mysql-otimizacao-de-consultas.aspx#" rel="nofollow" class="menulink">Front-end &nbsp;<small>▼</small></a><ul class="submenu"><li><a href="http://www.linhadecodigo.com.br/html.aspx">HTML</a></li><li><a href="http://www.linhadecodigo.com.br/css.aspx">CSS</a></li><li><a href="http://www.linhadecodigo.com.br/javascript.aspx">Javascript</a></li></ul></li></ul><ul class="menucel dm-2"><li><a href="http://www.linhadecodigo.com.br/bancodedados.aspx" class="menulink2">Banco de dados</a></li></ul><ul class="navspace menucel ativo2 dm-4"><li><a href="http://www.linhadecodigo.com.br/artigo/3620/indices-mysql-otimizacao-de-consultas.aspx#" rel="nofollow" class="menulink">Em destaque &nbsp;<small>▼</small></a><ul class="submenu"><li><a href="http://www.linhadecodigo.com.br/artigo/3593/alert-em-javascript.aspx">Alert em Javascript</a></li><li><a href="http://www.linhadecodigo.com.br/artigo/3604/calendario-em-jquery-criando-calendarios-com-datepicker.aspx">Crie calendários usando o Datepicker do Jquery</a></li><li><a href="http://www.linhadecodigo.com.br/artigo/3474/menu-em-css-menu-dropdown-horizontal-com-html5-e-css3.aspx">Como criar um menu em CSS</a></li><li><a href="http://www.linhadecodigo.com.br/artigo/3602/crop-jquery-recortando-imagens-com-jcrop.aspx">Faça crop em imagens com Jquery</a></li><li><a href="http://www.linhadecodigo.com.br/artigo/3600/botao-com-css-3-como-criar-um-botao-sem-imagens.aspx">Como criar botões com CSS3</a></li></ul></li></ul><ul class="menucel dm-4"><li><a href="http://www.linhadecodigo.com.br/publique.aspx" class="menulink2">Publique</a></li></ul></span>
+							<span id="WUC_Topo_Novo_lblTeste" class="aspNetDisabled"></span>
+							<span id="WUC_Topo_Novo_boxLogin" class="login-box"><div class="login-btn"><div class="popover1">Login</div><div class="pai"><div class="login-pop deslogado"><div class="login-form"><div class="seta"></div><form name="f1" class="form-inline" method="POST"><input type="text" name="userlogin" class="input-medium pull-left" placeholder="Usuário"><input type="password" name="usersenha" class="input-medium pull-right" placeholder="Senha"><input type="hidden" name="login" value="Login"><br><button type="submit">OK</button></form></div></div></div></div></span>
+					</div>
+				</div>
+			</div>
+		</nav><!-- FIM MENU DESKTOP -->
+		<div class="container-fluid dm-busca"><!-- BLOCO TOPO -->
+			<div class="container">
+				<div class="row-fluid">
+					<a href="http://www.linhadecodigo.com.br/"><img src="./Índices MySQL _ Otimização de consultas_files/logolc.png" alt="Linha de Código" title="Linha de Código"></a>
+					<!-- BUSCA EM TELA DESKTOP E TABLET -->
+					<nav id="busca">
+						<form id="buscaArtigos" action="http://www.linhadecodigo.com.br/busca.aspx">
+						<input type="text" id="Pesquisar" name="w" placeholder="Pesquisar">
+						<button type="submit"></button>
+						</form>
+					</nav>
+				</div>
+			</div>
+		</div><!-- FIM BLOCO TOPO -->
+	</header><!-- BLOCO DESTAQUES -->
+	<section class="container-fluid">
+		<div class="container">
+			<div class="row-fluid">
+				
+<div id="conteudo" class="main-content">
+    <span id="ContentPlaceHolder1_lblNomeCanal" class="title-page"><h3>Banco de Dados<span> - <a href="http://www.linhadecodigo.com.br/mysql.aspx" style="font-size: 20px;">MySQL</a></span><a class="rss-icon fr" href="http://www.linhadecodigo.com.br/rssartigosautor.aspx?autor=676" target="_blank"><i class="fa fa-rss-square fa-lg" title="Feed de artigos deste autor" alt="Feed de artigos deste autor"></i></a></h3></span>
+    <div style="word-wrap:break-word;">
+    <span id="ContentPlaceHolder1_lblTitulo"><h1>Índices MySQL : Otimização de consultas<br><p>Veja neste artigo como otimizar consultas no banco de dados MySQL através da utilização de  índices. Serão apresentadas ainda algumas dicas gerais para melhorar a performance das consultas a tabelas com grandes volumes de dados.</p><span>por <a href="http://www.linhadecodigo.com.br/colaborador.aspx?id=676">Joel Rodrigues</a></span></h1></span>
+    <span id="ContentPlaceHolder1_lblSocialShareArticle"><div id="social-share-article"><span class="st_facebook_hcount" displaytext="Facebook" st_image="http://www.linhadecodigo.com.br/img/logoLc.png"></span><span class="st_twitter_hcount" displaytext="Tweet" st_image="http://www.linhadecodigo.com.br/img/logoLc.png"></span><span class="st_linkedin_hcount" displaytext="LinkedIn" st_image="http://www.linhadecodigo.com.br/img/logoLc.png"></span><span class="st_email_hcount" displaytext="Email" st_image="http://www.linhadecodigo.com.br/img/logoLc.png"></span><span class="st_plusone_hcount" st_image="http://www.linhadecodigo.com.br/img/logoLc.png" style="margin-left:5px;"></span><span class="st_fblike_hcount" st_image="http://www.linhadecodigo.com.br/img/logoLc.png" style="margin-left:-5px;"></span></div><br><br></span>
+    <span id="ContentPlaceHolder1_lblTexto" class="artigo"><div class="article"><h2>Introdução aos Índices MySQL</h2>
+<p>Quando se trabalha com bancos de dados, diariamente é preciso fazer consultas a tabelas com grandes quantidades de registros e que por este motivo levam algum tempo para serem lidas para que o resultado seja retornado. Independente da plataforma (desktop, web, mobile), o desempenho das aplicações é um fator fundamental e determinante, por exemplo, quando um cliente vai adquirir um sistema. Por isso, os programadores e administradores de bancos de dados se esforçam para que o tempo de resposta, quando consultas a bancos de dados são feitas, seja o menor possível.</p>
+<p>Diante dessas situações, vários métodos podem garantir melhoria nesse tempo de resposta. A seguir são apresentadas algumas dicas que, apesar de simples, podem aumentar o desempenho de consultas, principalmente àquelas tabelas com grandes muitos dados armazenados.</p>
+<ul>
+ <li>Ao realizar uma consulta, selecione apenas as colunas realmente necessárias, isso reduz a quantidade de dados retornada. Nem sempre é preciso usar o “SELECT *”, então vale a pena avaliar quais campos serão realmente utilizados e listá-los na cláusula select.</li>
+<li>Na cláusula where, procure usar sempre a seguinte ordem nos filtros pelo tipo da coluna: NUMÉRICOS -&gt; DATA/HORA -&gt; TEXTO SIMPLES -&gt; TEXTO EXTENSOS/BINÁRIOS. Essa ordem se explica pelo nível de exatidão e complexidade de cada tipo de dado. Quanto mais exato e menos complexo for o dado da coluna, mais simples é a avaliação do seu valor.</li>
+<li>Sempre que possível utilize consultas por igualdade no lugar de filtros por faixas de valores, isso reduz a quantidade de avaliações feitas com o valor (se possível, dê prioridade a filtrar pelos dados na ordem da dica anterior).</li>
+<li>Considere utilizar índices, principalmente em campos numéricos de suas tabelas. Essa medida ajuda o gerenciador do banco de dados a localizar os registros com mais facilidade. Esse elemento (índice) é o principal foco deste artigo e será melhor explicado a seguir.</li>
+</ul>
+<h2>Entendo os índices</h2>
+<p>Antes de falarmos diretamente sobre os índices, é preciso que tenhamos entendido como funcionam as consultas tradicionais nos bancos de dados.</p>
+<p>Quando temos uma tabela e executamos uma operação de SELECT sobre ela, filtrando por um ou vários campos, o gerenciador do banco efetua uma ação chamada “TABLE SCAN”. Essa ação consiste em percorrer toda a tabela, avaliando cada registro. Caso o registro atenda às condições definidas no filtro, ele é incluído no conjunto de retorno, senão, é apenas desconsiderado.</p>
+<p>A figura a seguir ilustra uma pesquisa desse tipo, filtrando uma tabela pelo campo “Codigo”, onde seu valor seja “3”.</p>
+<img src="./Índices MySQL _ Otimização de consultas_files/IndicesMySQL01.jpg" alt="Esquema de consulta Table Scan"><br>
+<p><strong>Figura 1</strong>: Esquema de consulta Table Scan</p>
+<p>No exemplo acima a tabela continha apenas três registros e a consulta foi facilmente concluída, porém, imagine algo semelhante em uma tabela com milhares de linhas.</p>
+<p>Para melhorar essas consultas, utilizamos ÍNDICES, objetos do banco de dados que facilitam a organização e consulta de uma tabela, “indexando-a” por uma de suas colunas.</p>
+<p>Quando criamos um índice em uma coluna, o gerenciador do banco ordena a tabela por essa coluna e a partir de então os filtros (sobre essa coluna) são feitos através de uma busca binária.</p>
+<p>Na busca binária, a tabela sofre divisões sucessivas até que o registro desejado seja localizado. Inicialmente a tabela é “dividida” na metade, onde os registros com os menores valores no campo indexado ficam na parte superior, e os registros com os maiores valores ficam na parte inferior. O gerenciador verifica então em que parte está contido o valor pesquisado, se na primeira metade ou na segunda. Isso é facilmente feito comparando o valor pesquisado com o do registro intermediário. Se o valor pesquisado for maior que o do registro intermediário, o registro desejado encontra-se na segunda metade, caso contrário, encontra-se na primeira metade. Na figura a seguir temos uma ilustração desse processo.</p>
+<img src="./Índices MySQL _ Otimização de consultas_files/IndicesMySQL02.jpg" alt="Divisão da tabela na metade"><br>
+<p><strong>Figura 2</strong>: Divisão da tabela na metade</p>
+<p>Por exemplo, se pesquisássemos pelo registro de Codigo = 3, seria avaliado se esse valor é maior ou menor que 5. Como o valor é menor, indica que o registro procurado encontra-se na primeira metade.</p>
+<p>Em seguida, o processo é repetido apenas na metade em que se encontra o registro pesquisado, dividindo-a na metade e avaliando novamente em que parte encontra-se o que se deseja.</p>
+<p>Note que na operação de table scan, todos os registros seriam lidos e com a utilização de índices, na primeira divisão já se descarta metade dos registros da tabela. Para tabelas pequenas a diferença dificilmente é percebida, mas quando se trabalha com grandes volumes de dados, essa simples mudança pode evitar, por exemplo, um erro de “time out” (tempo de máximo de requisição excedido).</p>
+<p><i><strong>Observação</strong>: esse modelo de busca se baseia na árvore de busca binária, estrutura de dados e consulta largamente utilizada na computação.</i></p>
+<h2>Índice no MySQL</h2>
+<p>No banco de dados MySQL os índices podem ser criados com considerável facilidade, tanto no momento da concepção da tabela quanto em uma tabela já existente.</p>
+<p>Mantendo os exemplos que foram dados anteriormente, vamos criar uma tabela chamada CLIENTES com dois campos: Codigo, do tipo inteiro e Nome do tipo texto.</p>
+<p>Primeiramente veremos como criar o índice junto com a tabela, na Listagem 1.</p>
+<p><strong>Listagem 1</strong>: Criando o índice junto com a tabela</p>
+<div><div id="highlighter_813297" class="syntaxhighlighter  js"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="js plain">CREATE TABLE CLIENTES</code></div><div class="line number2 index1 alt1"><code class="js plain">(</code></div><div class="line number3 index2 alt2"><code class="js spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="js plain">Codigo&nbsp; INT,</code></div><div class="line number4 index3 alt1"><code class="js spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="js plain">Nome&nbsp;&nbsp;&nbsp; VARCHAR(50),</code></div><div class="line number5 index4 alt2"><code class="js spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="js plain">INDEX (Codigo)</code></div><div class="line number6 index5 alt1"><code class="js plain">);</code></div></div></td></tr></tbody></table></div></div><div class="spacesyntax"></div>
+<p>O índice é criado com o uso da palavra reservada INDEX, seguida do nome da(s) coluna(s) a ser(em) indexada(s). </p>
+<p>Porém, nem sempre sabemos onde vamos precisar de um índice e muitas vezes é preciso criá-los quando a tabela já existe e inclusive quando já possui registros. Isso pode ser feito com uma instrução DDL (Data Definition Language), como veremos a seguir. Inicialmente criamos a tabela sem índice algum, em seguida adicionamos o índice à coluna “Codigo”.</p>
+<p><strong>Listagem 2</strong>: Criando a tabela sem índices</p>
+<div><div id="highlighter_256209" class="syntaxhighlighter  js"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="js plain">CREATE TABLE CLIENTES</code></div><div class="line number2 index1 alt1"><code class="js plain">(</code></div><div class="line number3 index2 alt2"><code class="js spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="js plain">Codigo&nbsp; INT,</code></div><div class="line number4 index3 alt1"><code class="js spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="js plain">Nome&nbsp;&nbsp;&nbsp; VARCHAR(50</code></div><div class="line number5 index4 alt2"><code class="js plain">);</code></div></div></td></tr></tbody></table></div></div><div class="spacesyntax"></div>
+<p>Em seguida, para criar o índice usamos a instrução CREATE.</p>
+<p><strong>Listagem 3</strong>: Criando o índice separadamente</p>
+<div><div id="highlighter_832220" class="syntaxhighlighter  js"><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="js plain">CREATE INDEX idx_CLIENTES_CODIGO ON CLIENTES(Codigo);</code></div></div></td></tr></tbody></table></div></div><div class="spacesyntax"></div>
+<p>Nesse caso precisamos definir um nome para o índice (por questão de padronização, alguns profissionais optam por iniciar o nome do índice com um prefixo que indique que ele é um índice, como “id” ou “idx” de “index”, em inglês).</p>
+<p>Após o nome do índice adicionamos a palavra reservada “ON” que indica em que tabela e coluna o índice será criado, dados que vêm logo em seguida, como vemos na listagem.</p>
+<h2>Conclusão</h2>
+<p>Em um contexto (pode-se dizer mundial) onde a quantidade de dados armazenados virtualmente só aumenta, o rápido acesso a eles é de extrema importância, pois o excesso de tempo gasto em uma operação pode, inclusive, acarretar prejuízos.</p>
+<p>O <a href="http://www.devmedia.com.br/estabelecendo-uma-estrategia-para-o-uso-efetivo-de-indices/8068" target="_blank" title="Estabelecendo uma estratégia para o uso efetivo de índices">uso de índices</a> e de técnicas de otimização, como as que foram citadas no início desse artigo, garante o ganho de performance nas consultas a bancos de dados e, consequentemente, nas aplicações que os acessam.</p>
+<p>Espero que tenham gostado das informações aqui apresentadas e que essas possam ser úteis. Até a próxima oportunidade. </p></div></span>
+    </div>
+    <div class="author-box-article">
+        <span id="ContentPlaceHolder1_lblImgColunista"></span>
+        <span id="ContentPlaceHolder1_lblAutorDescricao"><a href="http://www.linhadecodigo.com.br/colaborador.aspx?id=676"><img src="./Índices MySQL _ Otimização de consultas_files/semfoto.jpg" border="=&quot;0&quot;" alt="Joel Rodrigues" title="Joel Rodrigues"><p>Joel Rodrigues - Técnico em Informática - IFRN Cursando Bacharelado em Ciências e Tecnologia - UFRN Programador .NET/C# e Delphi há quase 3 anos, já tendo trabalhado com Webservices, WPF, Windows Phone 7 e ASP.NET, possui ainda conhecimentos em HTML, CSS e Javascript (JQuery).</p></a></span>
+    </div>
+    <span id="ContentPlaceHolder1_lblSocialShareArticle2"><div id="social-share-article"><span class="st_facebook_hcount" displaytext="Facebook" st_image="http://www.linhadecodigo.com.br/img/logoLc.png"></span><span class="st_twitter_hcount" displaytext="Tweet" st_image="http://www.linhadecodigo.com.br/img/logoLc.png"></span><span class="st_linkedin_hcount" displaytext="LinkedIn" st_image="http://www.linhadecodigo.com.br/img/logoLc.png"></span><span class="st_email_hcount" displaytext="Email" st_image="http://www.linhadecodigo.com.br/img/logoLc.png"></span><span class="st_plusone_hcount" st_image="http://www.linhadecodigo.com.br/img/logoLc.png" style="margin-left:5px;"></span><span class="st_fblike_hcount" st_image="http://www.linhadecodigo.com.br/img/logoLc.png" style="margin-left:-5px;"></span></div></span>
+
+    <hr class="content-spacer">    
+    <span id="ContentPlaceHolder1_lblArtigosRelacionados"><ul class="news-courses-videos-list" style="width:auto;"><h3>Leia também</h3><li><a href="http://www.linhadecodigo.com.br/artigo/3151/modulos-que-nao-podem-faltar-na-sua-intranet-com-xoops.aspx" rel="nofollow">Módulos que não podem faltar na sua Intranet com XOOPS</a><span>PHP</span></li><li><a href="http://www.linhadecodigo.com.br/artigo/3024/o-dba-de-alta-performance.aspx" rel="nofollow">O DBA de Alta Performance</a><span>Firebird</span></li><li><a href="http://www.linhadecodigo.com.br/artigo/2840/apache-cassandra-nosql-uma-tecnologia-emergente.aspx" rel="nofollow">Apache Cassandra NoSQL, uma tecnologia emergente</a><span>MySQL</span></li><li><a href="http://www.linhadecodigo.com.br/artigo/2239/usando-o-mysql-administrator.aspx" rel="nofollow">Usando o MySql Administrator</a><span>MySQL</span></li><li><a href="http://www.linhadecodigo.com.br/artigo/2215/trabalhando-com-banco-de-dados-sqlite.aspx" rel="nofollow">Trabalhando com banco de dados SQLite</a><span>MySQL</span></li></ul></span>
+</div>
+
+				<div class="aside">
+					
+<span style="font-size:10px; font-family:Arial, Verdana; color:#999999;">Publicidade</span><br><div class="sidebar-ads"><span id="WUC_banner_lblBanner"><a target="_blank" href="http://www.devmedia.com.br/"><img src="./Índices MySQL _ Otimização de consultas_files/banner-devmedia2017.png" alt="DevMedia"></a></span></div>
+					
+					<div class="sidebar-ads" style="border:none;"><span id="WUC_banner_sec_lblBanner_sec" style="margin-top: 25px;display: inline-block;"></span></div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+<section class="dm-limitfoot"></section>
+<footer>
+	<section class="container-fluid footer-box dm-cor1">
+		<div class="container ">
+			<div class="row-fluid">
+				<div class="span7 f-box-filho">
+					<div class="row-fluid cx2">
+						<img src="./Índices MySQL _ Otimização de consultas_files/logolc.png" alt="Linha de Código" title="Linha de Código" width="145" height="32">
+						<nav><a href="http://www.web-03.net/linhadecodigo.asp" target="_blank">Anuncie</a>|<a href="mailto:colabore@linhadecodigo.com.br" target="_blank">Fale Conosco</a>|<a href="http://www.linhadecodigo.com.br/publique.aspx">Publique</a></nav>
+					</div>
+					<ul class="social-bar">
+						<li><a class="icon-1" href="http://www.facebook.com/linhadecodigo" target="_blank"></a></li>
+						<li><a class="icon-3" href="https://twitter.com/linhadecodigo" target="_blank"></a></li>
+						<li><a class="icon-4" href="https://plus.google.com/100240100485097203227?prsrc=3" target="_blank"></a></li>
+						<li><a class="icon-2" href="http://www.linhadecodigo.com.br/feed/"></a></li>
+					</ul>
+				</div>
+				<div class="span5 cx3">
+					<div class="fb-shell">
+						<div class="fb-like-box">
+							<div class="fb-page fb_iframe_widget" data-href="https://www.facebook.com/linhadecodigo" data-width="765" data-height="184" data-small-header="true" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true" data-show-posts="false" fb-xfbml-state="rendered" fb-iframe-plugin-query="adapt_container_width=true&amp;app_id=557561654385120&amp;container_width=470&amp;height=184&amp;hide_cover=false&amp;href=https%3A%2F%2Fwww.facebook.com%2Flinhadecodigo&amp;locale=pt_BR&amp;sdk=joey&amp;show_facepile=true&amp;show_posts=false&amp;small_header=true&amp;width=765"><span style="vertical-align: bottom; width: 470px; height: 70px;"><iframe name="f33d1db228614a8" width="765px" height="184px" data-testid="fb:page Facebook Social Plugin" title="fb:page Facebook Social Plugin" frameborder="0" allowtransparency="true" allowfullscreen="true" scrolling="no" allow="encrypted-media" src="./Índices MySQL _ Otimização de consultas_files/page.html" style="border: none; visibility: visible; width: 470px; height: 70px;" class=""></iframe></span></div>
+						</div>
+					</div>
+				</div>				
+			</div>
+		</div>				
+	</section>					
+	<section class="container-fluid dm-cor2 footer-box2">
+		<div class="container ">
+			<div class="row-fluid">
+				<div class="span4 offset4" style="text-align:center">Copyright 2021 - todos os direitos reservados para
+					<a href="http://www.web-03.net/" style="font-weight:bold" target="_blank" rel="nofollow">Web03</a>
+				</div>
+			</div>
+		</div>
+	</section><!-- FIM DESSA CRIANÇA -->
+</footer><!-- FIM BLOCO FOOTER -->
+</div>
+
+<iframe src="./Índices MySQL _ Otimização de consultas_files/portal-v2.html" id="st_gdpr_iframe" title="GDPR Consent Management" style="width: 0px; height: 0px; position: absolute; left: -5000px;"></iframe></body></html>
